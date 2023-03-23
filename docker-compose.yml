@@ -1,0 +1,22 @@
+version: "3"
+services:
+    server:
+        container_name: server
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        image: server
+        ports:
+            - "9200:9200"
+        volumes:
+            - ./server:/app
+    web:
+        container_name: client
+        build:
+            context: ./web-client
+            dockerfile: Dockerfile
+        image: react
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./web-client:/app
