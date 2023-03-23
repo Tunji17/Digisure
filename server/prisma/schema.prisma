@@ -17,15 +17,15 @@ model User {
   lastName  String
   email     String  @unique
   password  String
-  account   Account @relation(fields: [accountId], references: [id])
-  accountId Int
+  account  Account?
 }
 
 model Account {
   id      Int    @default(autoincrement()) @id
   number  String @unique
   balance Float
-  users   User[]
+  owner   User  @relation(fields: [ownerId], references: [id])
+  ownerId Int   @unique
   transactions Transactions[]
 }
 
@@ -35,4 +35,5 @@ model Transactions {
   type      String
   account   Account @relation(fields: [accountId], references: [id])
   accountId Int
+  createdAt           DateTime         @default(now())
 }

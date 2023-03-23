@@ -84,3 +84,23 @@ export class UserResponseDto {
   @ApiProperty()
   user: UserDto;
 }
+
+export class TransactionDto {
+  @IsNumber()
+  @ApiProperty()
+  id: number;
+
+  @IsNumber()
+  @ApiProperty()
+  amount: number;
+
+  @IsString()
+  @Trim()
+  @ApiProperty()
+  type: string;
+
+  @IsString()
+  @Trim()
+  @ApiProperty()
+  createdAt: Date;
+}

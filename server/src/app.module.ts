@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppService } from './services/app.service';
+import { UserService } from './services/user.service';
+import { TransactionService } from './services/transaction.service';
 import { PrismaModule } from './database/prisma.module';
 import { AuthHelper } from './app.helper';
 import { JwtStrategy } from './app.strategy';
@@ -17,6 +19,12 @@ import { JwtStrategy } from './app.strategy';
     PrismaModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AuthHelper, JwtStrategy],
+  providers: [
+    AppService,
+    UserService,
+    TransactionService,
+    AuthHelper,
+    JwtStrategy,
+  ],
 })
 export class AppModule {}
