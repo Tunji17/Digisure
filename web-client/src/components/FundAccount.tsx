@@ -9,7 +9,7 @@ type FormData = {
 
 const FundAccount = () => {
 
-  const { user } = useAppContext();
+  const { user, fundAccount } = useAppContext();
 
   const {
     register,
@@ -76,7 +76,12 @@ const FundAccount = () => {
     };
 
   const submitForm = (data: FormData) => {
-    toast.success('Account funded successfully');
+    try {
+      fundAccount(data.amount);
+      toast.success('Account funded successfully');
+    } catch (error) {
+      toast.error('An error occurred while funding your account');
+    }
   };
 
   return (

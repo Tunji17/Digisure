@@ -5,10 +5,8 @@ import FundAccount from './components/FundAccount';
 
 const Dashboard = () => {
 
-  const { user, accessToken } = useAppContext();
+  const { user } = useAppContext();
   console.log("user", user);
-  console.log('accessToken', accessToken);
-
 
   return (
     <div>

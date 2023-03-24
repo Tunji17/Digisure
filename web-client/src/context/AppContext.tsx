@@ -15,6 +15,7 @@ type AppContextType = {
   user: User | null;
   createUser: (user: CreateUser) => void;
   loginUser: (user: LoginUser) => void;
+  fundAccount: (amount: number) => void;
 };
 
 const apiBaseUrl = "http://localhost:9200";
@@ -25,6 +26,7 @@ const AppContext = React.createContext<AppContextType>({
   user: null,
   createUser: () => {},
   loginUser: () => {},
+  fundAccount: () => {},
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -60,8 +62,33 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     setUser(response.data.user);
   }, []);
 
+  const fundAccount = useCallback(async (amount: number) => {
+    await axios.post(`${apiBaseUrl}/account/deposit`, {
+      amount
+    },{
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+     });
+     setUser({
+        ...user!,
+        account: {
+          ...user!.account,
+          balance: user!.account.balance + amount,
+        }
+      });
+  }, [accessToken, user]);
+
+
   return (
-    <AppContext.Provider value={{ user, createUser, isUserLoggedIn, accessToken, loginUser }}>
+    <AppContext.Provider value={{
+        user,
+        createUser,
+        isUserLoggedIn,
+        accessToken,
+        loginUser,
+        fundAccount
+      }}>
       {children}
     </AppContext.Provider>
   );
