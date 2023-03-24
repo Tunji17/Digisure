@@ -46,6 +46,8 @@ export class UserService {
       },
     });
 
+    delete user.password;
+
     return {
       token: this.authHelper.generateToken(user),
       user,
@@ -80,6 +82,8 @@ export class UserService {
       throw new HttpException('Invalid password', HttpStatus.BAD_REQUEST);
     }
 
+    delete user.password;
+
     return {
       token: this.authHelper.generateToken(user),
       user,
@@ -100,6 +104,9 @@ export class UserService {
         },
       },
     });
+
+    delete activeUser.password;
+
     return {
       token: this.authHelper.generateToken(activeUser),
       user: activeUser,

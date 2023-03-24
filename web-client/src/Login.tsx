@@ -1,6 +1,8 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
+import { useAppContext } from './context/AppContext';
 
 type FormData = {
   email: string;
@@ -14,8 +16,13 @@ const Login = () => {
     formState: { errors },
   } = useForm<FormData>();
 
+  const { loginUser } = useAppContext();
+  const navigate = useNavigate();
+
   const submitForm = (data: FormData) => {
-    console.log(data);
+    loginUser(data);
+    toast.success('Account created successfully');
+    navigate('/dashboard');
   }
 
   return (
