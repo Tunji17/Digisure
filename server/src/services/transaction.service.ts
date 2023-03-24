@@ -36,8 +36,13 @@ export class TransactionService {
     await this.prisma.transactions.create({
       data: {
         amount,
-        type: 'credit',
-        account: {
+        type: 'deposit',
+        fromAccount: {
+          connect: {
+            id: account.id,
+          },
+        },
+        toAccount: {
           connect: {
             id: account.id,
           },
@@ -99,12 +104,34 @@ export class TransactionService {
       },
     });
 
-    // create transaction
+    // create transactions
     await this.prisma.transactions.create({
       data: {
         amount,
         type: 'debit',
-        account: {
+        fromAccount: {
+          connect: {
+            id: account.id,
+          },
+        },
+        toAccount: {
+          connect: {
+            id: account.id,
+          },
+        },
+      },
+    });
+
+    await this.prisma.transactions.create({
+      data: {
+        amount,
+        type: 'credit',
+        fromAccount: {
+          connect: {
+            id: account.id,
+          },
+        },
+        toAccount: {
           connect: {
             id: account.id,
           },
@@ -132,7 +159,36 @@ export class TransactionService {
 
     const transactions = await this.prisma.transactions.findMany({
       where: {
-        accountId: account.id,
+        OR: [
+          {
+            fromAccountId: account.id,
+            toAccountId: account.id,
+          },
+        ],
+      },
+      include: {
+        fromAccount: {
+          select: {
+            number: true,
+            owner: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+        toAccount: {
+          select: {
+            number: true,
+            owner: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
       },
     });
 

@@ -100,8 +100,12 @@ const FundAccount = () => {
           <h5 className="mb-1 text-xl font-medium text-gray capitalize">
             {user.firstName} {user.lastName}
           </h5>
-          <div className="flex">
+          <div className="flex flex-col">
             <span className="capitalize mt-2 font-semibold mb-4 overflow-scroll text-sm text-gray">
+              {' '}
+              {'Account NUmber: '} {user.account.number}
+            </span>
+            <span className="capitalize font-semibold mb-4 overflow-scroll text-sm text-gray">
               {' '}
               {'Account Balance: '} {user.account.balance}
             </span>

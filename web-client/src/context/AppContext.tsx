@@ -7,7 +7,7 @@ import React, {
   useCallback,
 } from "react";
 import axios from "axios";
-import { User, CreateUser, LoginUser } from "../types";
+import { User, CreateUser, LoginUser, Transactions } from "../types";
 
 type AppContextType = {
   isUserLoggedIn: boolean;
@@ -16,6 +16,8 @@ type AppContextType = {
   createUser: (user: CreateUser) => void;
   loginUser: (user: LoginUser) => void;
   fundAccount: (amount: number) => void;
+  fetchTransactions: () => void;
+  transactions: Transactions[];
 };
 
 const apiBaseUrl = "http://localhost:9200";
@@ -27,6 +29,8 @@ const AppContext = React.createContext<AppContextType>({
   createUser: () => {},
   loginUser: () => {},
   fundAccount: () => {},
+  fetchTransactions: () => {},
+  transactions: [],
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -35,6 +39,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const isUserLoggedIn = useMemo(() => !!user, [user]);
+  const [transactions, setTransactions] = useState<Transactions[]>([]);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -77,8 +82,18 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
           balance: user!.account.balance + amount,
         }
       });
+    localStorage.setItem("user", JSON.stringify(user));
   }, [accessToken, user]);
 
+  const fetchTransactions = useCallback(async () => {
+    const response = await axios.get(`${apiBaseUrl}/transaction/history`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    setTransactions(response.data.transactions);
+  }, [accessToken]);
 
   return (
     <AppContext.Provider value={{
@@ -87,7 +102,9 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         isUserLoggedIn,
         accessToken,
         loginUser,
-        fundAccount
+        fundAccount,
+        fetchTransactions,
+        transactions,
       }}>
       {children}
     </AppContext.Provider>

@@ -21,19 +21,22 @@ model User {
 }
 
 model Account {
-  id      Int    @default(autoincrement()) @id
-  number  String @unique
-  balance Float
-  owner   User  @relation(fields: [ownerId], references: [id])
-  ownerId Int   @unique
-  transactions Transactions[]
+  id        Int    @default(autoincrement()) @id
+  number    String @unique
+  balance   Float
+  owner     User  @relation(fields: [ownerId], references: [id])
+  ownerId   Int   @unique
+  debits    Transactions[] @relation("sender")
+  credits   Transactions[] @relation("recepient")
 }
 
 model Transactions {
-  id        Int     @default(autoincrement()) @id
-  amount    Float
-  type      String
-  account   Account @relation(fields: [accountId], references: [id])
-  accountId Int
-  createdAt           DateTime         @default(now())
+  id            Int     @default(autoincrement()) @id
+  amount        Float
+  type          String
+  fromAccount   Account @relation("sender", fields: [fromAccountId], references: [id])
+  fromAccountId Int
+  toAccount     Account @relation("recepient", fields: [toAccountId], references: [id])
+  toAccountId   Int
+  createdAt     DateTime         @default(now())
 }
