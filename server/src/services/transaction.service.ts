@@ -72,7 +72,7 @@ export class TransactionService {
 
     const toAccount = await this.prisma.account.findUnique({
       where: {
-        number: to,
+        number: to.toString(),
       },
     });
 
@@ -116,7 +116,7 @@ export class TransactionService {
         },
         toAccount: {
           connect: {
-            id: account.id,
+            id: toAccount.id,
           },
         },
       },
@@ -133,7 +133,7 @@ export class TransactionService {
         },
         toAccount: {
           connect: {
-            id: account.id,
+            id: toAccount.id,
           },
         },
       },
@@ -161,8 +161,14 @@ export class TransactionService {
       where: {
         OR: [
           {
-            fromAccountId: account.id,
-            toAccountId: account.id,
+            fromAccount: {
+              number: account.number,
+            },
+          },
+          {
+            toAccount: {
+              number: account.number,
+            },
           },
         ],
       },
@@ -189,6 +195,9 @@ export class TransactionService {
             },
           },
         },
+      },
+      orderBy: {
+        createdAt: 'desc',
       },
     });
 

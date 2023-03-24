@@ -18,9 +18,6 @@ const Transactions = () => {
     fetchTransactions();
   }, [fetchTransactions])
 
-  console.log("transactions", transactions);
-  
-
   const columns = React.useMemo<Column<TableData>[]>(
     () => [
       {

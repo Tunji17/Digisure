@@ -1,6 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
+import { useAppContext } from '../context/AppContext';
 
 type FormData = {
   amount: number;
@@ -8,6 +9,9 @@ type FormData = {
 }
 
 const TransferFunds = () => {
+
+  const { transferFunds, fetchTransactions } = useAppContext();
+
   const {
     register,
     handleSubmit,
@@ -15,8 +19,13 @@ const TransferFunds = () => {
   } = useForm<FormData>();
 
   const submitForm = async (data: FormData) => {
-    console.log(data);
-    toast.success('Funds Transfered');
+    try {
+      await transferFunds(data.amount, data.to);
+      toast.success('Funds Transfered');
+      fetchTransactions();
+    } catch (error) {
+      toast.error('An error occured while transferring funds');
+    }
   };
 
   return (
@@ -54,7 +63,7 @@ const TransferFunds = () => {
               <input
                 className="px-4 py-2 text-sm text-black  border border-primary rounded-lg focus:border-blue-500 focus:outline-none focus:ring"
                 id="to"
-                type="number"
+                type="text"
                 placeholder="Account Number"
                 {...register('to', { required: true,
                     valueAsNumber: true,

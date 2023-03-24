@@ -1,15 +1,10 @@
 import React from 'react'
-import { useAppContext } from './context/AppContext';
 import Navigation from './components/Navigation';
 import FundAccount from './components/FundAccount';
 import TransferFunds from './components/TransferFunds';
 import Transactions from './components/Transactions';
 
 const Dashboard = () => {
-
-  const { user } = useAppContext();
-  console.log("user", user);
-
   return (
     <div>
       <Navigation />

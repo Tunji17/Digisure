@@ -18,6 +18,7 @@ type AppContextType = {
   fundAccount: (amount: number) => void;
   fetchTransactions: () => void;
   transactions: Transactions[];
+  transferFunds: (amount: number, toAccount: string) => void;
 };
 
 const apiBaseUrl = "http://localhost:9200";
@@ -31,6 +32,7 @@ const AppContext = React.createContext<AppContextType>({
   fundAccount: () => {},
   fetchTransactions: () => {},
   transactions: [],
+  transferFunds: () => {},
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -51,49 +53,91 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const createUser = useCallback(async (payload: CreateUser) => {
-    const response = await axios.post(`${apiBaseUrl}/user`, payload);
-    localStorage.setItem("accessToken", response.data.token);
-    localStorage.setItem("user", JSON.stringify(response.data.user));
-    setAccessToken(response.data.token);
-    setUser(response.data.user);
+    try {
+      const response = await axios.post(`${apiBaseUrl}/user`, payload);
+      localStorage.setItem("accessToken", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      setAccessToken(response.data.token);
+      setUser(response.data.user);
+    } catch (error) {
+      throw new Error("An error occured");
+    }
   }, []);
 
 
   const loginUser = useCallback(async (payload: LoginUser) => {
-    const response = await axios.post(`${apiBaseUrl}/user/login`, payload);
-    localStorage.setItem("accessToken", response.data.token);
-    localStorage.setItem("user", JSON.stringify(response.data.user));
-    setAccessToken(response.data.token);
-    setUser(response.data.user);
+    try {
+      const response = await axios.post(`${apiBaseUrl}/user/login`, payload);
+      localStorage.setItem("accessToken", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      setAccessToken(response.data.token);
+      setUser(response.data.user);
+    } catch (error) {
+      throw new Error("Invalid credentials");
+    }
   }, []);
 
   const fundAccount = useCallback(async (amount: number) => {
-    await axios.post(`${apiBaseUrl}/account/deposit`, {
-      amount
-    },{
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-     });
-     setUser({
+    try {
+      await axios.post(`${apiBaseUrl}/account/deposit`, {
+        amount
+      },{
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+       });
+       const updatedUser = {
         ...user!,
         account: {
           ...user!.account,
           balance: user!.account.balance + amount,
         }
-      });
-    localStorage.setItem("user", JSON.stringify(user));
+      }
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    } catch (error) {
+      throw new Error("An error occured");
+    }
   }, [accessToken, user]);
 
   const fetchTransactions = useCallback(async () => {
-    const response = await axios.get(`${apiBaseUrl}/transaction/history`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    setTransactions(response.data.transactions);
+    try {
+      const response = await axios.get(`${apiBaseUrl}/transaction/history`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setTransactions(response.data.transactions);
+    } catch (error) {
+      throw new Error("An error occured");
+    }
   }, [accessToken]);
+
+  const transferFunds = useCallback(async (amount: number, accountNumber: string) => {
+    try {
+      await axios.post(`${apiBaseUrl}/transaction/transfer`, {
+        amount,
+        accountNumber,
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+  
+      const updatedUser = {
+        ...user!,
+        account: {
+          ...user!.account,
+          balance: user!.account.balance - amount,
+        }
+      }
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    } catch (error) {
+      throw new Error("An error occured");
+    }
+  }, [accessToken, user]);
+
 
   return (
     <AppContext.Provider value={{
@@ -105,6 +149,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
         fundAccount,
         fetchTransactions,
         transactions,
+        transferFunds,
       }}>
       {children}
     </AppContext.Provider>

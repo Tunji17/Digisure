@@ -19,10 +19,14 @@ const Login = () => {
   const { loginUser } = useAppContext();
   const navigate = useNavigate();
 
-  const submitForm = (data: FormData) => {
-    loginUser(data);
-    toast.success('Account created successfully');
-    navigate('/dashboard');
+  const submitForm = async (data: FormData) => {
+    try {
+      await loginUser(data);
+      toast.success('Account created successfully');
+      navigate('/dashboard');
+    } catch (error) {
+      toast.error('Auth details are incorrect');
+    }
   }
 
   return (

@@ -20,10 +20,14 @@ const Signup = () => {
   const { createUser } = useAppContext();
   const navigate = useNavigate();
 
-  const submitForm = (data: FormData) => {
-    createUser(data);
-    toast.success('Account created successfully');
-    navigate('/dashboard');
+  const submitForm = async (data: FormData) => {
+    try {
+      await createUser(data);
+      toast.success('Account created successfully');
+      navigate('/dashboard');
+    } catch (error) {
+      toast.error('An error occurred, please try again');
+    }
   }
 
   return (

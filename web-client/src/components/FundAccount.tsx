@@ -9,11 +9,12 @@ type FormData = {
 
 const FundAccount = () => {
 
-  const { user, fundAccount } = useAppContext();
+  const { user, fundAccount, fetchTransactions } = useAppContext();
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -75,10 +76,12 @@ const FundAccount = () => {
       return canvas.toDataURL()
     };
 
-  const submitForm = (data: FormData) => {
+  const submitForm = async (data: FormData) => {
     try {
-      fundAccount(data.amount);
+      await fundAccount(data.amount);
+      setValue('amount', 0);
       toast.success('Account funded successfully');
+      fetchTransactions();
     } catch (error) {
       toast.error('An error occurred while funding your account');
     }
