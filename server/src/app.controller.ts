@@ -109,7 +109,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   async getTransactionHistory(
     @Req() { user }: Request,
-  ): Promise<TransactionDto[]> {
+  ): Promise<{ transactions: TransactionDto[] }> {
     return this.transactionService.getTransactionHistory(<User>user);
   }
 }

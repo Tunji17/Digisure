@@ -117,7 +117,9 @@ export class TransactionService {
     };
   }
 
-  async getTransactionHistory(user: User): Promise<TransactionDto[]> {
+  async getTransactionHistory(
+    user: User,
+  ): Promise<{ transactions: TransactionDto[] }> {
     const account = await this.prisma.account.findUnique({
       where: {
         ownerId: user.id,
@@ -134,6 +136,6 @@ export class TransactionService {
       },
     });
 
-    return transactions;
+    return { transactions };
   }
 }
